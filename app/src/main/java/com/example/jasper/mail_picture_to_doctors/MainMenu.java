@@ -1,12 +1,13 @@
 package com.example.jasper.mail_picture_to_doctors;
 
 import android.app.Activity;
-import android.content.SharedPreferences;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
+
+import com.example.jasper.Photopackage.PhotoIntentActivity;
 
 public class MainMenu extends Activity {
 
@@ -17,13 +18,22 @@ public class MainMenu extends Activity {
         setContentView(R.layout.activity_main_menu);
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main_menu, menu);
         //extra comments.
         return true;
+    }
+
+    /**
+     * Onclick from the main menu to the Activity of a camera.
+     * Result is the user is redirected to a urine sample photo menu.
+     * @param view
+     */
+    public void onClickSendUrineSample(View view){
+        Intent intent = new Intent(this, PhotoIntentActivity.class);
+        startActivity(intent);
     }
 
     @Override
