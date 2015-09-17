@@ -6,8 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -19,12 +17,7 @@ public class QRScanActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qrscan);
 
-        Button btn = (Button) findViewById(R.id.scan_button);
-        btn.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                scan();
-            }
-        });
+        QRScan.scan(this, true, "Please scan the test strip's QR-code");
     }
 
     @Override
@@ -49,20 +42,11 @@ public class QRScanActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void scan() {
-        IntentIntegrator integrator = new IntentIntegrator(this);
-        integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
-        integrator.setPrompt("Scan a QR code");
-        integrator.setBeepEnabled(true);
-        integrator.initiateScan();
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
         if (result != null) {
             String contents = result.getContents();
-            Log.i("scan", contents);
         }
     }
 }
