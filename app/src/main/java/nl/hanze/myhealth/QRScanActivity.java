@@ -1,8 +1,8 @@
 package nl.hanze.myhealth;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -50,13 +50,11 @@ public class QRScanActivity extends AppCompatActivity {
     }
 
     public void scan() {
-        IntentIntegrator integrator = new IntentIntegrator(QRScanActivity.this);
-        integrator.addExtra("SCAN_WIDTH", 640);
-        integrator.addExtra("SCAN_HEIGHT", 480);
-        integrator.addExtra("SCAN_MODE", "QR_CODE_MODE");
-        //customize the prompt message before scanning
-        integrator.addExtra("PROMPT_MESSAGE", "Scanner Start!");
-        integrator.initiateScan(IntentIntegrator.PRODUCT_CODE_TYPES);
+        IntentIntegrator integrator = new IntentIntegrator(this);
+        integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
+        integrator.setPrompt("Scan a QR code");
+        integrator.setBeepEnabled(true);
+        integrator.initiateScan();
     }
 
     @Override
