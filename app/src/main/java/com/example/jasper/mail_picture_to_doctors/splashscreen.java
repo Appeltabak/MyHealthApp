@@ -1,9 +1,5 @@
 package com.example.jasper.mail_picture_to_doctors;
 
-/**
- * Created by Jasper on 15-9-2015.
- */
-
         import android.app.Activity;
         import android.content.Intent;
         import android.os.Bundle;
@@ -14,7 +10,7 @@ package com.example.jasper.mail_picture_to_doctors;
 public class splashscreen extends Activity {
 
     //Set waktu lama splashscreen
-    private static int splashInterval = 2000;
+    private static int splashInterval = 2100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +41,6 @@ public class splashscreen extends Activity {
             }
         }, splashInterval);
 
-    };
+    }
 
 }
