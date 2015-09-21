@@ -36,6 +36,16 @@ public class MainMenu extends Activity {
         startActivity(intent);
     }
 
+    /**
+     * Onclick from the main menu to the Activity of a camera.
+     * Result is the user is redirected to a urine sample photo menu.
+     * @param view
+     */
+    public void onClickSendUrineSampleStrip(View view){
+        Intent intent = new Intent(this, QRScanActivity.class);
+        startActivity(intent);
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will

@@ -14,4 +14,16 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:onClick="onClickSendUrineSample" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/urine_sample_strip"
+        android:id="@+id/urine_sample_strip_menu"
+        android:layout_below="@+id/urine_sample_menu"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:onClick="onClickSendUrineSampleStrip"/>
 </RelativeLayout>

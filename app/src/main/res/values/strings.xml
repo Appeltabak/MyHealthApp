@@ -15,5 +15,6 @@
     <string name="album_name">Camera album sample</string>
 
     <string name="urine_sample">Send Urine Sample</string>
+    <string name="urine_sample_strip">Send Urine Sample Strip</string>
     <string name="picture_from_gallery">image from gallery</string>
 </resources>
