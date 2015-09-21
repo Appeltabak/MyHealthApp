@@ -1,4 +1,4 @@
-package nl.hanze.myhealth;
+package nl.hanze.myhealth.photo;
 
 import java.io.File;
 

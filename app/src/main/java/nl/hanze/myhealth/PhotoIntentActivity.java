@@ -24,6 +24,10 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.VideoView;
 
+import nl.hanze.myhealth.photo.AlbumStorageDirFactory;
+import nl.hanze.myhealth.photo.BaseAlbumDirFactory;
+import nl.hanze.myhealth.photo.FroyoAlbumDirFactory;
+
 public class PhotoIntentActivity extends Activity {
 
     private static final int ACTION_TAKE_PHOTO_B = 1;
@@ -46,7 +50,7 @@ public class PhotoIntentActivity extends Activity {
     private static final String JPEG_FILE_PREFIX = "IMG_";
     private static final String JPEG_FILE_SUFFIX = ".jpg";
 
-    private AlbumStorageDirFactory mAlbumStorageDirFactory = null;
+    public AlbumStorageDirFactory mAlbumStorageDirFactory = null;
 
 
     /* Photo album for this application */
