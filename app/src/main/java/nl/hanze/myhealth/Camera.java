@@ -44,6 +44,11 @@ public class Camera {
         return BitmapFactory.decodeFile(mCurrentPhotoPath);
     }
 
+    public static void destroyPicture() {
+        (new File(mCurrentPhotoPath)).delete();
+        mCurrentPhotoPath = null;
+    }
+
     private static File createImageFile(Activity activity) throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
