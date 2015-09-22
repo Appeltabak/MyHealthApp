@@ -2,6 +2,8 @@ package nl.hanze.myhealth;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -35,6 +37,11 @@ public class Camera {
                 activity.startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
             }
         }
+    }
+
+    public static Bitmap getFullSizedPicture() {
+        if(mCurrentPhotoPath == null) return null;
+        return BitmapFactory.decodeFile(mCurrentPhotoPath);
     }
 
     private static File createImageFile(Activity activity) throws IOException {
