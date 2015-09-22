@@ -17,4 +17,8 @@
     <string name="urine_sample">Send Urine Sample</string>
     <string name="urine_sample_strip">Send Urine Sample Strip</string>
     <string name="picture_from_gallery">image from gallery</string>
+
+    <!-- Scan QR urine strip -->
+    <string name="qr_no_result">The QR-scan did not return a result!</string>
+    <string name="qr_scan_prompt">Please scan the test strip\'s QR-code</string>
 </resources>

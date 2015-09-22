@@ -20,7 +20,7 @@ import static android.support.v4.app.ActivityCompat.startActivityForResult;
  */
 public class Camera {
     static final int REQUEST_IMAGE_CAPTURE = 1;
-    static String mCurrentPhotoPath;
+    static String mCurrentPhotoPath = null;
 
     public static void takePicture(Activity activity) {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
