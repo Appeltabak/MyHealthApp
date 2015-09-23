@@ -8,14 +8,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -74,19 +72,27 @@ public class LoginActivity extends AppCompatActivity {
         //String url = "http://myhealthweb.herokuapp.com/";
         final TextView mTxtDisplay = (TextView) findViewById(R.id.jsonresponsetest);
 
-        String url = "http://89.188.21.190/sensors/getSensorBySensorId/2";
+        String url = "http://89.188.21.190/sensors/getSensorBySensorId/2"; //API URL ingevuld en wel de andere zijde op sturen.
 
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, url, (String)null, new Response.Listener<JSONObject>() {
 
                     @Override
                     public void onResponse(JSONObject response) {
-                        mTxtDisplay.setText("Response: " + response.toString());
+                        //DO AWESOME SHIT.
+                        if(response.has("entityId")){
+                            try {
+                                mTxtDisplay.setText("ID: " + response.get("entityId")); //verwacht nummer 1
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
                     }
                 }, new Response.ErrorListener() {
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        mTxtDisplay.setText("Something went wrong, please try again later."); //verwacht nummer 1
                         error.printStackTrace();
                         // TODO Auto-generated method stub
 
@@ -99,22 +105,6 @@ public class LoginActivity extends AppCompatActivity {
 
         // Access the RequestQueue through your singleton class.
         SingletonNetworkAdapter.getInstance(this).addToRequestQueue(jsObjRequest);
-
-
-//        ImageLoader mImageLoader;
-//        NetworkImageView mNetworkImageView;
-//        String IMAGE_URL =
-//                "http://developer.android.com/images/training/system-ui.png";
-//
-//        // Get the NetworkImageView that will display the image.
-//        mNetworkImageView = (NetworkImageView) findViewById(R.id.networkImageView);
-//
-//        // Get the ImageLoader through your singleton class.
-//        mImageLoader = SingletonNetworkAdapter.getInstance(this).getImageLoader();
-//
-//        // Set the URL of the image that should be loaded into this view, and
-//        // specify the ImageLoader that will be used to make the request.
-//        mNetworkImageView.setImageUrl(IMAGE_URL, mImageLoader);
         return "";
     }
 }
