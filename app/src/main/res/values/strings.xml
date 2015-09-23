@@ -13,6 +13,7 @@
     <string name="btnIntend">Take Picture</string>
     <string name="cannot">Cannot find camera</string>
     <string name="album_name">Camera album sample</string>
+    <string name="send_button">Verstuur foto</string>
 
     <string name="urine_sample">Send Urine Sample</string>
     <string name="urine_sample_strip">Send Urine Sample Strip</string>

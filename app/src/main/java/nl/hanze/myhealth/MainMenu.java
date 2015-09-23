@@ -7,8 +7,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import nl.hanze.myhealth.PhotoIntentActivity;
-
 public class MainMenu extends Activity {
 
 
