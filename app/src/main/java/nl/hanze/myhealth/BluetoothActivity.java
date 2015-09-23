@@ -4,6 +4,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 
 public class BluetoothActivity extends AppCompatActivity {
@@ -13,7 +15,16 @@ public class BluetoothActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth);
 
-        Bluetooth.init(this);
+        Bluetooth bluetooth = new Bluetooth();
+        bluetooth.init(this);
+
+        ArrayAdapter mAdapter = new ArrayAdapter(this,
+                R.layout.bluetooth_device_list_item, R.id.textView);
+
+        ListView list = (ListView) findViewById(R.id.listView);
+        list.setAdapter(mAdapter);
+
+        bluetooth.scan(this, mAdapter);
     }
 
     @Override
