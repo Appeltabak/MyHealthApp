@@ -11,8 +11,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.widget.ArrayAdapter;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.UUID;
 
@@ -26,6 +29,7 @@ public class Bluetooth {
     private static BluetoothAdapter mBluetoothAdapter;
     private BroadcastReceiver mReceiver;
     private PrintWriter writer;
+    private BufferedReader reader;
 
     /**
      * Sets up the Bluetooth object. Invocation of this method is mandatory before using
@@ -44,7 +48,12 @@ public class Bluetooth {
     public void stop(Activity activity) {
         activity.unregisterReceiver(mReceiver);
         mBluetoothAdapter.cancelDiscovery();
+
         if(writer != null) { writer.close(); }
+        if(reader != null) {
+            try { reader.close(); }
+            catch (IOException e) {}
+        }
     }
 
     /**
@@ -117,13 +126,6 @@ public class Bluetooth {
     }
 
     /**
-     * Terminate the bluetooth connection.
-     */
-    public void disconnect() {
-
-    }
-
-    /**
      * Send a message to the connected bluetooth device.
      * @param msg
      * @param socket
@@ -139,8 +141,11 @@ public class Bluetooth {
     /**
      * Reads one line of data received from the connected bluetooth device.
      */
-    public String readLine() {
-        return null;
+    public String readLine(BluetoothSocket socket) throws IOException {
+        if(reader == null) {
+            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        }
+        return reader.readLine();
     }
 
     /**
