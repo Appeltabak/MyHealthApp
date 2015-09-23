@@ -36,6 +36,7 @@ public class Bluetooth {
      */
     public void stop(Activity activity) {
         activity.unregisterReceiver(mReceiver);
+        mBluetoothAdapter.cancelDiscovery();
     }
 
     /**
