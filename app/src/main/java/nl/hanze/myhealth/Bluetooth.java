@@ -3,18 +3,23 @@ package nl.hanze.myhealth;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothServerSocket;
+import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.widget.ArrayAdapter;
 
+import java.io.IOException;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Created by Jeroen on 23-9-2015.
  */
 public class Bluetooth {
+    public static final String SERVICE_NAME = "MyHealth";
     public static final int REQUEST_ENABLE_BT = 255;
 
     private static BluetoothAdapter mBluetoothAdapter;
@@ -41,6 +46,8 @@ public class Bluetooth {
 
     /**
      * Scan for available bluetooth devices.
+     * @param activity
+     * @param adapter
      */
     public void scan(Activity activity, ArrayAdapter adapter) {
         Set<BluetoothDevice> devices = mBluetoothAdapter.getBondedDevices();
@@ -54,6 +61,8 @@ public class Bluetooth {
     /**
      * Enable other Bluetooth devices to discover this device. Set the duration to 0 to make
      * the device always discoverable or -1 to use the default 120 seconds.
+     * @param activity
+     * @param duration
      */
     public void enableDiscoverability(Activity activity, int duration) {
         Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
@@ -62,10 +71,26 @@ public class Bluetooth {
     }
 
     /**
-     * Start listening for an incomming bluetooth connection.
+     * Start listening for an incomming bluetooth connection. The provided handler should implement
+     * event methods for handling bluetooth communication.
+     * @param handler
      */
-    public void listen() {
+    public void listen(BluetoothHandler handler) {
+        BluetoothServerSocket server = null;
 
+        try {
+            // 0x0003 = RFCOMM UUID (http://www.bluecove.org/bluecove/apidocs/javax/bluetooth/UUID.html)
+            server = mBluetoothAdapter.listenUsingRfcommWithServiceRecord(SERVICE_NAME, UUID.fromString("0x0003"));
+            BluetoothSocket client = server.accept();
+            handler.onConnect(client);
+        } catch (IOException e) {
+            handler.onError(e);
+        } finally {
+            if(server != null) {
+                try { server.close(); }
+                catch(IOException e) {}
+            }
+        }
     }
 
     /**
