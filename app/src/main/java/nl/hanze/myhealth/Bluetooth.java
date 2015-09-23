@@ -1,9 +1,25 @@
-package bluetooth;
+package nl.hanze.myhealth;
+
+import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
+import android.content.Intent;
 
 /**
  * Created by Jeroen on 23-9-2015.
  */
 public class Bluetooth {
+    public static final int REQUEST_ENABLE_BT = 255;
+
+    public static void init(Activity activity) {
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter == null) return;
+
+        if (!mBluetoothAdapter.isEnabled()) {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            activity.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+        }
+    }
+
     /**
      * Scan for available bluetooth devices.
      */
@@ -46,4 +62,5 @@ public class Bluetooth {
     public String readLine() {
         return null;
     }
+
 }
