@@ -12,6 +12,7 @@ import android.content.IntentFilter;
 import android.widget.ArrayAdapter;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Set;
 import java.util.UUID;
 
@@ -24,6 +25,7 @@ public class Bluetooth {
 
     private static BluetoothAdapter mBluetoothAdapter;
     private BroadcastReceiver mReceiver;
+    private PrintWriter writer;
 
     /**
      * Sets up the Bluetooth object. Invocation of this method is mandatory before using
@@ -42,6 +44,7 @@ public class Bluetooth {
     public void stop(Activity activity) {
         activity.unregisterReceiver(mReceiver);
         mBluetoothAdapter.cancelDiscovery();
+        if(writer != null) { writer.close(); }
     }
 
     /**
@@ -123,9 +126,14 @@ public class Bluetooth {
     /**
      * Send a message to the connected bluetooth device.
      * @param msg
+     * @param socket
      */
-    public void send(String msg) {
-
+    public void send(String msg, BluetoothSocket socket) throws IOException {
+        if(writer == null) {
+            writer = new PrintWriter(socket.getOutputStream());
+        }
+        writer.println(msg);
+        writer.flush();
     }
 
     /**
