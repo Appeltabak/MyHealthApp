@@ -52,6 +52,16 @@ public class Bluetooth {
     }
 
     /**
+     * Enable other Bluetooth devices to discover this device. Set the duration to 0 to make
+     * the device always discoverable or -1 to use the default 120 seconds.
+     */
+    public void enableDiscoverability(Activity activity, int duration) {
+        Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+        discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+        activity.startActivity(discoverableIntent);
+    }
+
+    /**
      * Start listening for an incomming bluetooth connection.
      */
     public void listen() {

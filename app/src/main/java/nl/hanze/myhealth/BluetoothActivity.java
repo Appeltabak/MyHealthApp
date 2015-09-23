@@ -1,11 +1,16 @@
 package nl.hanze.myhealth;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 
 public class BluetoothActivity extends AppCompatActivity {
@@ -15,7 +20,9 @@ public class BluetoothActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth);
 
-        Bluetooth bluetooth = new Bluetooth();
+        final Activity mActivity = this;
+
+        final Bluetooth bluetooth = new Bluetooth();
         bluetooth.init(this);
 
         ArrayAdapter mAdapter = new ArrayAdapter(this,
@@ -25,6 +32,14 @@ public class BluetoothActivity extends AppCompatActivity {
         list.setAdapter(mAdapter);
 
         bluetooth.scan(this, mAdapter);
+
+        Button button = (Button) findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bluetooth.enableDiscoverability(mActivity, 120);
+            }
+        });
     }
 
     @Override
@@ -47,5 +62,12 @@ public class BluetoothActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode == RESULT_CANCELED) {
+            Toast.makeText(this, "An error occurred: The device is not discoverable!", Toast.LENGTH_LONG);
+        }
     }
 }
