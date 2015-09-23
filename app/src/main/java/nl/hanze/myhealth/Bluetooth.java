@@ -45,7 +45,8 @@ public class Bluetooth {
     }
 
     /**
-     * Scan for available bluetooth devices.
+     * Scan for available bluetooth devices. Scan results are added to the provided ArrayAdapter
+     * instance.
      * @param activity
      * @param adapter
      */
@@ -72,10 +73,11 @@ public class Bluetooth {
 
     /**
      * Start listening for an incomming bluetooth connection. The provided handler should implement
-     * event methods for handling bluetooth communication.
+     * event methods for handling bluetooth communication. This method should be invoked using a
+     * separate thread!
      * @param handler
      */
-    public void listen(BluetoothHandler handler) {
+    public void listen(BluetoothClientHandler handler) {
         BluetoothServerSocket server = null;
 
         try {
@@ -94,10 +96,21 @@ public class Bluetooth {
     }
 
     /**
-     * Connect to the bluetooth device.
+     * Connect to the bluetooth device. This method should be invoked using a separate thread!
+     * @param device
      */
-    public void connect() {
-
+    public void connect(BluetoothHandler handler, BluetoothDevice device) {
+        mBluetoothAdapter.cancelDiscovery();
+        BluetoothSocket socket = null;
+        try {
+            // 0x0003 = RFCOMM UUID (http://www.bluecove.org/bluecove/apidocs/javax/bluetooth/UUID.html)
+            socket = device.createRfcommSocketToServiceRecord(UUID.fromString("0x0003"));
+            handler.onConnect(socket);
+        } catch (IOException e) {
+            try { socket.close(); }
+            catch (IOException e1) {}
+            handler.onError(e);
+        }
     }
 
     /**
