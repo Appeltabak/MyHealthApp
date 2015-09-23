@@ -45,6 +45,7 @@ public class Camera {
     }
 
     public static void destroyPicture() {
+        if(mCurrentPhotoPath == null) { return; }
         (new File(mCurrentPhotoPath)).delete();
         mCurrentPhotoPath = null;
     }
