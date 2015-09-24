@@ -64,11 +64,11 @@ public class LoginActivity extends AppCompatActivity implements MyHealthHandler 
     @Override
     public void onResult(Object result) {
         //Go to mainmenu. (new intent).
-        Toast.makeText(this, "Success!", Toast.LENGTH_LONG);
+        Toast.makeText(this, "Success!", Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void onError(Object error) {
-        Toast.makeText(this, "Failure: " + error.toString(), Toast.LENGTH_LONG);
+        Toast.makeText(this, "Failure: " + error.toString(), Toast.LENGTH_LONG).show();
     }
 }

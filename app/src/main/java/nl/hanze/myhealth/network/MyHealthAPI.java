@@ -1,9 +1,7 @@
 package nl.hanze.myhealth.network;
 
-import android.app.Activity;
 import android.content.Context;
 
-import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -47,7 +45,7 @@ public class MyHealthAPI {
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        mHandler.onError(error.fillInStackTrace());
+                        mHandler.onError(error);
                     }
                 });
 
