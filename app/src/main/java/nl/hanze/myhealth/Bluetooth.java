@@ -32,7 +32,9 @@ public class Bluetooth {
 
     /**
      * Sets up the Bluetooth object. Invocation of this method is mandatory before using
-     * other methods provided by the Bluetooth class.
+     * other methods provided by the Bluetooth class. The result of enabling bluetooth
+     * can be handled by the activities onActivityResult() method using
+     * requestCode == Bluetooth.REQUEST_ENABLE_BT .
      * @param activity
      */
     public void init(Activity activity) {
@@ -72,7 +74,11 @@ public class Bluetooth {
 
     /**
      * Enable other Bluetooth devices to discover this device. Set the duration to 0 to make
-     * the device always discoverable or -1 to use the default 120 seconds.
+     * the device always discoverable or -1 to use the default 120 seconds. Whether the user
+     * choose "Yes" or "No" in the dialog can be handled in the activities onActivityResult() method.
+     * The result code is equal to the duration that the device is discoverable. If the user
+     * responded "No" or if an error occurred, the result code will be RESULT_CANCELED.
+     *
      * @param activity
      * @param duration
      */
