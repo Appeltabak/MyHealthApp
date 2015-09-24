@@ -1,6 +1,7 @@
 package nl.hanze.myhealth;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -11,6 +12,8 @@ import android.widget.Toast;
 
 import nl.hanze.myhealth.network.MyHealthAPI;
 import nl.hanze.myhealth.network.MyHealthHandler;
+
+import static nl.hanze.myhealth.utils.sha512.generateHash;
 
 public class LoginActivity extends Activity implements MyHealthHandler {
     private MyHealthAPI api;
@@ -57,13 +60,21 @@ public class LoginActivity extends Activity implements MyHealthHandler {
     }
 
     public void verifyLogin(String username, String password) {
-        api.login(username, password);
+        if(!password.isEmpty()) {
+            password = generateHash(password);
+            //Toast.makeText(this,password, Toast.LENGTH_LONG).show();
+            api.login(username, password);
+        }
     }
 
     @Override
     public void onResult(Object result) {
         //Go to mainmenu. (new intent).
         Toast.makeText(this, "Success!", Toast.LENGTH_LONG).show();
+
+        Intent i = new Intent(LoginActivity.this, MainMenu.class);
+        //Intent i = new Intent(Splashscreen.this, MainMenu.class);
+        startActivity(i);
     }
 
     @Override

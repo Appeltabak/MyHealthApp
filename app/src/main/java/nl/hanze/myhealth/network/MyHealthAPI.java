@@ -13,7 +13,7 @@ import org.json.JSONObject;
 
 public class MyHealthAPI {
     final int LOGIN = 1;
-    final static String HOST = "http://www.omdbapi.com/";
+    final static String HOST = "https://myhealthweb.herokuapp.com/";
 
     private MyHealthHandler handler;
     private RequestQueue queue;
@@ -32,7 +32,7 @@ public class MyHealthAPI {
      * @param password  het wachtwoord dat toegestuurd wordt.
      */
     public void login(String username, String password) {
-        String url = HOST + "?t=test&y=&plot=short&r=json";
+        String url = HOST + "api/users_verification/"+username+"/"+password;
 
         final MyHealthHandler mHandler = handler;
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
