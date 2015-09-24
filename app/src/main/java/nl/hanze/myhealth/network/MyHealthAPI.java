@@ -9,57 +9,48 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 
 import org.json.JSONObject;
 
 public class MyHealthAPI {
-
-
-
     final int LOGIN = 1;
-    final static String HOST = "http://www.omdbapi.com/?t=test&y=&plot=short&r=json"; //i-share database API HOST-URL.
-    static Context context;
+    final static String HOST = "http://www.omdbapi.com/";
+
+    private MyHealthHandler handler;
+    private RequestQueue queue;
+
+    public MyHealthAPI(Context applicationContext, MyHealthHandler handler) {
+        queue = Volley.newRequestQueue(applicationContext);
+        setHandler(handler);
+    }
+
+    public void setHandler(MyHealthHandler handler) {
+        this.handler = handler;
+    }
 
     /**
      * @param username het gebruikersnaam dat ingevuld wordt.
-     * @param password  het wachtwoord dat toegestuurd.
-     * @param handler de activity waar het model naar toe wordt gestuurd.
+     * @param password  het wachtwoord dat toegestuurd wordt.
      */
-    public static void login(String username, String password, MyHealthHandler handler) {
+    public void login(String username, String password) {
+        String url = HOST + "?t=test&y=&plot=short&r=json";
 
         final MyHealthHandler mHandler = handler;
-        //String url = MyHealthAPI.HOST+ "/getSensorBySensorId/2"; //API URL ingevuld en wel de andere zijde op sturen.
-        //String url = "http://www.omdbapi.com/?t=test&y=&plot=short&r=json";
-        String url = "http://89.188.21.190/entities/getEntityByEntityId/5";
-
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                (Request.Method.GET, url, (String)null, new Response.Listener<JSONObject>() {
-
+                (Request.Method.GET, url, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-
-                        //Toffe classe om te decouplen.
-                        //LinkedHashMap returnObject = new LinkedHashMap<>();
-                        //System.out.println(response.toString());
-                        mHandler.onResult( response); //Stuur het door naar de resultaat van de activiteit
+                        // Parse that Json.
+                        mHandler.onResult(response);
                     }
                 }, new Response.ErrorListener() {
-
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        mHandler.onError(error.fillInStackTrace()); //stuur error door naar de activiteit <handler>.
-                        error.printStackTrace();
-                        error.getCause();
-                        error.getClass();
-                        // TODO Auto-generated method stub
+                        mHandler.onError(error.fillInStackTrace());
                     }
                 });
 
-        jsObjRequest.setRetryPolicy(new DefaultRetryPolicy(5000,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-
-        // Access the RequestQueue through your singleton class.
-        MyHealthClient.getInstance(handler.getContext()).addToRequestQueue(jsObjRequest);
+        queue.add(jsObjRequest);
     }
 }

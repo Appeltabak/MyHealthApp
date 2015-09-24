@@ -8,24 +8,28 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import nl.hanze.myhealth.network.MyHealthAPI;
 import nl.hanze.myhealth.network.MyHealthHandler;
 
 public class LoginActivity extends AppCompatActivity implements MyHealthHandler {
+    private MyHealthAPI api;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        api = new MyHealthAPI(getApplicationContext(), this);
+
         final EditText usernameBox = (EditText) findViewById(R.id.usernameBox);
         final EditText passwordBox = (EditText) findViewById(R.id.passwordBox);
         final Button loginButton = (Button) findViewById(R.id.loginButton);
+
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Toast.makeText(LoginActivity.this, "Username: " + usernameBox.getText().toString() + "\n Password: " + passwordBox.getText().toString(), Toast.LENGTH_LONG).show();
                 verifyLogin(usernameBox.getText().toString(), passwordBox.getText().toString());
             }
         });
@@ -54,21 +58,17 @@ public class LoginActivity extends AppCompatActivity implements MyHealthHandler 
     }
 
     public void verifyLogin(String username, String password) {
-        MyHealthAPI.login(username, password, this);
+        api.login(username, password);
     }
 
     @Override
     public void onResult(Object result) {
         //Go to mainmenu. (new intent).
+        Toast.makeText(this, "Success!", Toast.LENGTH_LONG);
     }
 
     @Override
     public void onError(Object error) {
-            //Error happened.
-    }
-
-    @Override
-    public Context getContext() {
-        return this;
+        Toast.makeText(this, "Failure: " + error.toString(), Toast.LENGTH_LONG);
     }
 }
