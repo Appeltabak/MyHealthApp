@@ -1,5 +1,6 @@
 package nl.hanze.myhealth;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -15,7 +16,7 @@ import android.widget.ImageView;
 import java.io.IOException;
 import android.view.View;
 
-public class PhotoIntentActivity extends AppCompatActivity {
+public class PhotoIntentActivity extends Activity {
 
     private static final int ACTION_TAKE_PHOTO = 1;
     private static final int PICK_IMAGE = 2;
