@@ -1,5 +1,6 @@
 package nl.hanze.myhealth;
 
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 
 /**
@@ -8,4 +9,5 @@ import android.bluetooth.BluetoothSocket;
 public interface BluetoothHandler {
     public void onError(Exception e); // Handle error event
     public void onConnect(BluetoothSocket client); // Handle connect event
+    public void onDeviceFound(BluetoothDevice device); // Handle device found event
 }

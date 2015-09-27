@@ -58,18 +58,31 @@ public class Bluetooth {
     }
 
     /**
-     * Scan for available bluetooth devices. Scan results are added to the provided ArrayAdapter
+     * Scan for available bluetooth devices. The handler's onDeviceFound method is invoked
+     * each time a new device is found during the scan operation.
      * instance.
      * @param activity
-     * @param adapter
+     * @param handler
      */
-    public void scan(Activity activity, ArrayAdapter adapter) {
-        Set<BluetoothDevice> devices = mBluetoothAdapter.getBondedDevices();
-        for(BluetoothDevice device : devices) {
-            adapter.add(device);
-        }
-        startReceiver(activity, adapter);
+    public void scan(Activity activity, BluetoothHandler handler) {
+        startReceiver(activity, handler);
         mBluetoothAdapter.startDiscovery();
+    }
+
+    /**
+     * Cancels the scan operation if any.
+     * @return success
+     */
+    public boolean cancelScan() {
+        return mBluetoothAdapter.cancelDiscovery();
+    }
+
+    /**
+     * Get a set of known/paired bluetooth devices.
+     * @return devices
+     */
+    public Set<BluetoothDevice> getPairedDevices() {
+        return mBluetoothAdapter.getBondedDevices();
     }
 
     /**
@@ -178,10 +191,10 @@ public class Bluetooth {
     /**
      * Starts scanning for new Bluetooth devices.
      * @param activity
-     * @param adapter
+     * @param handler
      */
-    private void startReceiver(Activity activity, ArrayAdapter adapter) {
-        final ArrayAdapter mAdapter = adapter;
+    private void startReceiver(Activity activity, BluetoothHandler handler) {
+        final BluetoothHandler mHandler = handler;
 
         // Create a BroadcastReceiver for ACTION_FOUND
         mReceiver = new BroadcastReceiver() {
@@ -191,8 +204,8 @@ public class Bluetooth {
                 if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                     // Get the BluetoothDevice object from the Intent
                     BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                    // Add the name and address to an array adapter to show in a ListView
-                    mAdapter.add(device.getName() + "\n" + device.getAddress());
+                    // Notify the handler of the new device
+                    mHandler.onDeviceFound(device);
                 }
             }
         };
