@@ -29,6 +29,7 @@ public class Bluetooth {
     private BroadcastReceiver mReceiver;
     private PrintWriter writer;
     private BufferedReader reader;
+    private BluetoothServerSocket server;
 
     /**
      * Sets up the Bluetooth object. Invocation of this method is mandatory before using
@@ -49,6 +50,7 @@ public class Bluetooth {
     public void stop(Activity activity) {
         activity.unregisterReceiver(mReceiver);
         mBluetoothAdapter.cancelDiscovery();
+        stopServer();
 
         if(writer != null) { writer.close(); }
         if(reader != null) {
@@ -103,7 +105,8 @@ public class Bluetooth {
      * @param handler
      */
     public void listen(BluetoothClientHandler handler) {
-        BluetoothServerSocket server = null;
+        // Make sure only one BluetoothServerSocket is running.
+        stopServer();
 
         try {
             // UUID as seen in the Android Bluetooth Chat example.
@@ -113,11 +116,19 @@ public class Bluetooth {
         } catch (Exception e) {
             handler.onError(e);
         } finally {
-            if(server != null) {
-                try { server.close(); }
-                catch(IOException e) {}
-            }
+            stopServer();
         }
+    }
+
+    /**
+     * Stop listening for incomming connections.
+     */
+    public void stopServer() {
+        if(server == null) { return; }
+
+        try { server.close(); }
+        catch(IOException e) {}
+        server = null;
     }
 
     /**
