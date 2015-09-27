@@ -98,11 +98,11 @@ public class Bluetooth {
         BluetoothServerSocket server = null;
 
         try {
-            // 0x0003 = RFCOMM UUID (http://www.bluecove.org/bluecove/apidocs/javax/bluetooth/UUID.html)
-            server = mBluetoothAdapter.listenUsingRfcommWithServiceRecord(SERVICE_NAME, UUID.fromString("0x0003"));
+            // UUID as seen in the Android Bluetooth Chat example.
+            server = mBluetoothAdapter.listenUsingRfcommWithServiceRecord(SERVICE_NAME, UUID.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66"));
             BluetoothSocket client = server.accept();
             handler.onConnect(client);
-        } catch (IOException e) {
+        } catch (Exception e) {
             handler.onError(e);
         } finally {
             if(server != null) {
@@ -120,10 +120,10 @@ public class Bluetooth {
         mBluetoothAdapter.cancelDiscovery();
         BluetoothSocket socket = null;
         try {
-            // 0x0003 = RFCOMM UUID (http://www.bluecove.org/bluecove/apidocs/javax/bluetooth/UUID.html)
-            socket = device.createRfcommSocketToServiceRecord(UUID.fromString("0x0003"));
+            // UUID as seen in the Android Bluetooth Chat example.
+            socket = device.createRfcommSocketToServiceRecord(UUID.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66"));
             handler.onConnect(socket);
-        } catch (IOException e) {
+        } catch (Exception e) {
             try { socket.close(); }
             catch (IOException e1) {}
             handler.onError(e);
