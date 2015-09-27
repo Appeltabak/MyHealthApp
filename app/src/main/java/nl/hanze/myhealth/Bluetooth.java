@@ -89,6 +89,14 @@ public class Bluetooth {
     }
 
     /**
+     * Set the friendly Bluetooth name of the local Bluetooth adapter.
+     * @param name
+     */
+    public void setName(String name) {
+        mBluetoothAdapter.setName(name);
+    }
+
+    /**
      * Start listening for an incomming bluetooth connection. The provided handler should implement
      * event methods for handling bluetooth communication. This method should be invoked using a
      * separate thread!
