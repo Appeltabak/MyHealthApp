@@ -1,19 +1,22 @@
 package nl.hanze.myhealth;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.Toast;
 
+import java.io.IOException;
 
-public class BluetoothActivity extends AppCompatActivity {
+
+public class BluetoothActivity extends AppCompatActivity implements BluetoothHandler {
+    private Bluetooth bluetooth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,23 +24,17 @@ public class BluetoothActivity extends AppCompatActivity {
         setContentView(R.layout.activity_bluetooth);
 
         final Activity mActivity = this;
+        final BluetoothHandler mHandler = this;
 
         final Bluetooth bluetooth = new Bluetooth();
+        this.bluetooth = bluetooth;
         bluetooth.init(this);
-
-        ArrayAdapter mAdapter = new ArrayAdapter(this,
-                R.layout.bluetooth_device_list_item, R.id.textView);
-
-        ListView list = (ListView) findViewById(R.id.listView);
-        list.setAdapter(mAdapter);
-
-        bluetooth.scan(this, mAdapter);
 
         Button button = (Button) findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                bluetooth.enableDiscoverability(mActivity, 120);
+                bluetooth.scan(mActivity, mHandler);
             }
         });
     }
@@ -65,9 +62,34 @@ public class BluetoothActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(resultCode == RESULT_CANCELED) {
-            Toast.makeText(this, "An error occurred: The device is not discoverable!", Toast.LENGTH_LONG);
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {}
+
+    @Override
+    public void onError(Exception e) {}
+
+    @Override
+    public void onConnect(BluetoothSocket client) {
+        try {
+            String message = bluetooth.readLine(client);
+            Toast.makeText(this, "Client says: " + message, Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "Unable to read line!", Toast.LENGTH_LONG).show();
+        } finally {
+            try {
+                client.close();
+            } catch (IOException e) {
+                Toast.makeText(this, "Exception: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    @Override
+    public void onDeviceFound(BluetoothDevice device) {
+        String name = device.getName();
+        if(name.equals("MyHealth Monitor")) {
+            // Ladies and gentlemen... We've got him!
+            bluetooth.cancelScan();
+            bluetooth.connect(this, device);
         }
     }
 }
