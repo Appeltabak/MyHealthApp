@@ -39,6 +39,7 @@ public class BluetoothActivity extends AppCompatActivity implements BluetoothCli
             public void onClick(View v) {
                 bluetooth.enableDiscoverability(mActivity, 120);
                 BluetoothServerThread server = new BluetoothServerThread(mHandler, bluetooth);
+                server.start();
             }
         });
     }
