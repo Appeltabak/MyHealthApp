@@ -13,10 +13,15 @@ import android.view.Menu;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import java.io.File;
 import java.io.IOException;
 import android.view.View;
+import android.widget.Toast;
 
-public class PhotoIntentActivity extends Activity {
+import nl.hanze.myhealth.network.MyHealthAPI;
+import nl.hanze.myhealth.network.MyHealthHandler;
+
+public class PhotoIntentActivity extends Activity implements MyHealthHandler {
 
     private static final int ACTION_TAKE_PHOTO = 1;
     private static final int PICK_IMAGE = 2;
@@ -26,6 +31,8 @@ public class PhotoIntentActivity extends Activity {
     private Button sendButton;
 
     private ImageView mImageView;
+
+    public MyHealthAPI api;
 
 
     @Override
@@ -58,6 +65,9 @@ public class PhotoIntentActivity extends Activity {
                 }
             }
         });
+
+        api = new MyHealthAPI(getApplicationContext(), this);
+
     }
 
     public void disableShowButton(){
@@ -87,7 +97,14 @@ public class PhotoIntentActivity extends Activity {
             switch(requestCode)
             {
                 case PICK_IMAGE:
-                        mImageView.setImageBitmap(BitmapFactory.decodeFile(pickImageFromGallery(intent)));
+                    try {
+                        String filepath = pickImageFromGallery(intent);
+                        api.upload_picture(new File(filepath));
+                        mImageView.setImageBitmap(BitmapFactory.decodeFile(filepath));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
                     break;
                 case ACTION_TAKE_PHOTO:
                         showImg();
@@ -136,4 +153,13 @@ public class PhotoIntentActivity extends Activity {
         finish();
     }
 
+    @Override
+    public void onResult(Object result) {
+        Toast.makeText(this, "Success!", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onError(Object error) {
+        Toast.makeText(this, "Failure: " + error.toString(), Toast.LENGTH_LONG).show();
+    }
 }

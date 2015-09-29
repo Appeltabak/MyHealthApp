@@ -49,7 +49,7 @@ public class MyHealthAPI {
      * @param password  het wachtwoord dat toegestuurd wordt.
      */
     public void login(String username, String password) {
-        String url = HOST + "api/users_verification/"+username+"/"+password;
+        String url = HOST + "api/user_verification/"+username+"/"+password;
 
         final MyHealthHandler mHandler = handler;
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
@@ -77,7 +77,7 @@ public class MyHealthAPI {
     public void upload_picture(File image) throws IOException {
         final MyHealthHandler mHandler = handler;
         final String bytes = Image_Util.imageToBytes(image);
-        final String url = HOST + "api/image_uploade/"; //TODO Correct url.
+        final String url = HOST + "api/upload_image"; //TODO Correct url.
 
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.POST, url, new Response.Listener<JSONObject>() {
@@ -97,8 +97,8 @@ public class MyHealthAPI {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
                 // the POST parameters:
-                params.put("image", bytes);
-                params.put("network", "tutsplus");
+                params.put("files", bytes);
+                params.put("user_id", "1");
                 return params;
             }
         };

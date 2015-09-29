@@ -61,7 +61,7 @@ public class LoginActivity extends Activity implements MyHealthHandler {
 
     public void verifyLogin(String username, String password) {
         if(!password.isEmpty()) {
-            password = generateHash(password);
+            //password = generateHash(password);
             //Toast.makeText(this,password, Toast.LENGTH_LONG).show();
             api.login(username, password);
         }
