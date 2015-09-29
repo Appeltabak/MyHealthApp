@@ -6,25 +6,26 @@ import java.util.Random;
  * Created by Tim on 29-09-15.
  */
 public class BloodPressureSimulator {
-    String[] pressurevalues = new String[2];
+    int[] pressurevalues = new int[2];
 
-    public String[] simValue() {
+    public int[] simValue() {
         //calc systolic
         int maxUpper = 140;
         int minUpper = 90;
-        String systolicpressure = calcPressure(maxUpper, minUpper);
+        int systolicpressure = calcPressure(maxUpper, minUpper);
 
         //calc diastolic
         int maxLower = 90;
         int minLower = 60;
-        String diastolicpressure = calcPressure(maxLower, minLower);
+        int diastolicpressure = calcPressure(maxLower, minLower);
+
         pressurevalues[0] = systolicpressure;
         pressurevalues[1] = diastolicpressure;
         return pressurevalues;
     }
 
-    public String calcPressure(int max, int min) {
+    public int calcPressure(int max, int min) {
         Random rand = new Random();
-        return String.valueOf(rand.nextInt((max - min) + 1) + min);
+        return rand.nextInt((max - min) + 1) + min;
     }
 }

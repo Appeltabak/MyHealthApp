@@ -9,14 +9,11 @@ public class RunSimulator {
     BloodPressureSimulator bloodpressure;
 
 
-    public String[][] getData(){
-        runSim();
-        String [][] data = {ecg.getValues(), pulse.getValues(), bloodpressure.getValues()};
-        return data;
-    }
-    public void runSim(){
-        ecg.simValue();
-        pulse.simValue();
-        bloodpressure.simValue();
+    public HealthData runSim(){
+        HealthData healthdata = new HealthData();
+        healthdata.setEcg(ecg.simValue());
+        healthdata.setPulse(pulse.simValue());
+        healthdata.setBloodPressure(bloodpressure.simValue());
+        return healthdata;
     }
 }

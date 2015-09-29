@@ -10,6 +10,8 @@ import android.content.Intent;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.util.Set;
 import java.util.UUID;
@@ -98,6 +100,16 @@ public class Bluetooth {
     public String readLine(BluetoothSocket socket) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         return reader.readLine();
+    }
+
+    public void sendHealthData(HealthData healthdata, BluetoothSocket socket) throws IOException{
+        ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+        out.writeObject(healthdata);
+    }
+
+    public HealthData readHealthData(BluetoothSocket socket) throws IOException, ClassNotFoundException {
+        ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+        return (HealthData)in.readObject();
     }
 
     /**
