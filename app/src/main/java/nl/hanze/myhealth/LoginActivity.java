@@ -13,7 +13,6 @@ import android.widget.Toast;
 import nl.hanze.myhealth.network.MyHealthAPI;
 import nl.hanze.myhealth.network.MyHealthHandler;
 
-import static nl.hanze.myhealth.utils.sha512.generateHash;
 
 public class LoginActivity extends Activity implements MyHealthHandler {
     private MyHealthAPI api;
@@ -61,7 +60,7 @@ public class LoginActivity extends Activity implements MyHealthHandler {
 
     public void verifyLogin(String username, String password) {
         if(!password.isEmpty()) {
-            password = generateHash(password);
+            //password = generateHash(password);
             //Toast.makeText(this,password, Toast.LENGTH_LONG).show();
             api.login(username, password);
         }
@@ -79,6 +78,8 @@ public class LoginActivity extends Activity implements MyHealthHandler {
 
     @Override
     public void onError(Object error) {
+
+        Intent i = new Intent(LoginActivity.this, MainMenu.class);
         Toast.makeText(this, "Failure: " + error.toString(), Toast.LENGTH_LONG).show();
     }
 }

@@ -33,11 +33,15 @@ public class PhotoIntentActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_intent);
 
+        findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+
+        api = new MyHealthAPI(getApplicationContext(), this);
         mImageView = (ImageView) findViewById(R.id.imageView1);
 
         takeAPicture = (Button) findViewById(R.id.TakePicture);
         pickGallery = (Button) findViewById(R.id.load_gallery);
         sendButton = (Button) findViewById(R.id.send_button);
+
 
         pickGallery.setOnClickListener(new Button.OnClickListener() {
             @Override
@@ -58,6 +62,23 @@ public class PhotoIntentActivity extends Activity {
                 }
             }
         });
+
+        sendButton.setOnClickListener(new Button.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
+                sendButton.setVisibility(View.INVISIBLE);
+                try {
+                    api.upload_picture(image);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }//end onclick
+
+        });//end onclicklistener.
     }
 
     public void disableShowButton(){
@@ -136,4 +157,16 @@ public class PhotoIntentActivity extends Activity {
         finish();
     }
 
+    @Override
+    public void onResult(Object result) {
+        Toast.makeText(this,"OK",Toast.LENGTH_LONG ).show();
+        findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onError(Object error) {
+        Toast.makeText(this,"WRONG!"+ error,Toast.LENGTH_LONG ).show();
+        findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+        disableShowButton();
+    }
 }

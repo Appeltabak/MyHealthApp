@@ -45,11 +45,11 @@ public class MyHealthAPI {
     }
 
     /**
-     * @param username het gebruikersnaam dat ingevuld wordt.
-     * @param password  het wachtwoord dat toegestuurd wordt.
+     * @param username het gebruikersnaam dat ingevuld wordt. //temp stub: jan
+     * @param password  het wachtwoord dat toegestuurd wordt. // password: password
      */
     public void login(String username, String password) {
-        String url = HOST + "api/users_verification/"+username+"/"+password;
+        String url = HOST + "api/user_verification/"+username+"/"+password;
 
         final MyHealthHandler mHandler = handler;
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
@@ -57,12 +57,12 @@ public class MyHealthAPI {
                     @Override
                     public void onResponse(JSONObject response) {
                         // Parse that Json.
-                        mHandler.onResult(response);
+                        mHandler.onResult(true);
                     }
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        mHandler.onError(error);
+                        mHandler.onError(false);
                     }
                 });
 
@@ -84,12 +84,12 @@ public class MyHealthAPI {
                     @Override
                     public void onResponse(JSONObject response) {
                         // Parse that Json.
-                        mHandler.onResult(response);
+                        mHandler.onResult(true);
                     }
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        mHandler.onError(error);
+                        mHandler.onError(false);
                     }
                 }
                 ) {
