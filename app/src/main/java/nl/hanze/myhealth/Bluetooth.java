@@ -5,11 +5,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.widget.ArrayAdapter;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,205 +15,171 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Created by Jeroen on 23-9-2015.
+ * Created by Jeroen on 28-9-2015.
  */
 public class Bluetooth {
     public static final String SERVICE_NAME = "MyHealth";
-    public static final int REQUEST_ENABLE_BT = 255;
+    public static final java.util.UUID UUID = java.util.UUID.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66");
+    public static final int REQUEST_ENABLE_BT = 1;
 
-    private static BluetoothAdapter mBluetoothAdapter;
-    private BroadcastReceiver mReceiver;
-    private PrintWriter writer;
-    private BufferedReader reader;
-    private BluetoothServerSocket server;
+    private BluetoothAdapter mBluetoothAdapter;
+    private AcceptThread acceptThread;
+    private ConnectThread connectThread;
 
     /**
-     * Sets up the Bluetooth object. Invocation of this method is mandatory before using
-     * other methods provided by the Bluetooth class. The result of enabling bluetooth
-     * can be handled by the activities onActivityResult() method using
-     * requestCode == Bluetooth.REQUEST_ENABLE_BT .
+     * Initiate bluetooth.
      * @param activity
      */
     public void init(Activity activity) {
-        if(!isSupported()) { return; }
-        enable(activity);
-    }
-
-    /**
-     * It's important to execute the stop method before switching to a different Activity!
-     * @param activity
-     */
-    public void stop(Activity activity) {
-        activity.unregisterReceiver(mReceiver);
-        mBluetoothAdapter.cancelDiscovery();
-        stopServer();
-
-        if(writer != null) { writer.close(); }
-        if(reader != null) {
-            try { reader.close(); }
-            catch (IOException e) {}
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter != null) {
+            if (!mBluetoothAdapter.isEnabled()) {
+                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                activity.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+            }
         }
     }
 
     /**
-     * Scan for available bluetooth devices. Scan results are added to the provided ArrayAdapter
-     * instance.
-     * @param activity
-     * @param adapter
+     * Get a set of paired bluetooth devices.
+     * @return devices
      */
-    public void scan(Activity activity, ArrayAdapter adapter) {
-        Set<BluetoothDevice> devices = mBluetoothAdapter.getBondedDevices();
-        for(BluetoothDevice device : devices) {
-            adapter.add(device);
-        }
-        startReceiver(activity, adapter);
-        mBluetoothAdapter.startDiscovery();
+    public Set<BluetoothDevice> getBondedDevices() {
+        return mBluetoothAdapter.getBondedDevices();
     }
 
     /**
-     * Enable other Bluetooth devices to discover this device. Set the duration to 0 to make
-     * the device always discoverable or -1 to use the default 120 seconds. Whether the user
-     * choose "Yes" or "No" in the dialog can be handled in the activities onActivityResult() method.
-     * The result code is equal to the duration that the device is discoverable. If the user
-     * responded "No" or if an error occurred, the result code will be RESULT_CANCELED.
-     *
-     * @param activity
-     * @param duration
-     */
-    public void enableDiscoverability(Activity activity, int duration) {
-        Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-        discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, duration);
-        activity.startActivity(discoverableIntent);
-    }
-
-    /**
-     * Set the friendly Bluetooth name of the local Bluetooth adapter.
-     * @param name
-     */
-    public void setName(String name) {
-        mBluetoothAdapter.setName(name);
-    }
-
-    /**
-     * Start listening for an incomming bluetooth connection. The provided handler should implement
-     * event methods for handling bluetooth communication. This method should be invoked using a
-     * separate thread!
+     * Connect with the specified bluetooth device.
+     * @param device
      * @param handler
      */
-    public void listen(BluetoothClientHandler handler) {
-        // Make sure only one BluetoothServerSocket is running.
-        stopServer();
-
-        try {
-            // UUID as seen in the Android Bluetooth Chat example.
-            server = mBluetoothAdapter.listenUsingRfcommWithServiceRecord(SERVICE_NAME, UUID.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66"));
-            BluetoothSocket client = server.accept();
-            handler.onConnect(client);
-        } catch (Exception e) {
-            handler.onError(e);
-        } finally {
-            stopServer();
-        }
+    public void connect(BluetoothDevice device, BluetoothHandler handler) {
+        ConnectThread thread = new ConnectThread(device, handler);
+        thread.start();
     }
 
     /**
-     * Stop listening for incomming connections.
+     * Connect with a bluetooth device with the specified MAC address.
+     * @param address
+     * @param handler
      */
-    public void stopServer() {
-        if(server == null) { return; }
-
-        try { server.close(); }
-        catch(IOException e) {}
-        server = null;
+    public void connect(String address, BluetoothHandler handler) {
+        BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
+        connect(device, handler);
     }
 
     /**
-     * Connect to the bluetooth device. This method should be invoked using a separate thread!
-     * @param device
+     * Start listening for incomming bluetooth connections. This method only accepts one
+     * connection after which the device stops listening for connections.
+     * @param handler
      */
-    public void connect(BluetoothHandler handler, BluetoothDevice device) {
-        mBluetoothAdapter.cancelDiscovery();
-        BluetoothSocket socket = null;
-        try {
-            // UUID as seen in the Android Bluetooth Chat example.
-            socket = device.createRfcommSocketToServiceRecord(UUID.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66"));
-            handler.onConnect(socket);
-        } catch (Exception e) {
-            try { socket.close(); }
-            catch (IOException e1) {}
-            handler.onError(e);
-        }
+    public void listen(BluetoothHandler handler) {
+        AcceptThread thread = new AcceptThread(handler);
+        thread.start();
     }
 
     /**
-     * Send a message to the connected bluetooth device.
+     * Sends a message.
      * @param msg
      * @param socket
      */
-    public void send(String msg, BluetoothSocket socket) throws IOException {
-        if(writer == null) {
-            writer = new PrintWriter(socket.getOutputStream());
-        }
+    public void sendLine(String msg, BluetoothSocket socket) throws IOException {
+        PrintWriter writer = new PrintWriter(socket.getOutputStream());
         writer.println(msg);
         writer.flush();
     }
 
     /**
-     * Reads one line of data received from the connected bluetooth device.
+     * Reads a message.
+     * @param socket
+     * @return
+     * @throws IOException
      */
     public String readLine(BluetoothSocket socket) throws IOException {
-        if(reader == null) {
-            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        }
+        BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         return reader.readLine();
     }
 
     /**
-     * Checks Bluetooth support.
-     * @return isSupported
+     * The thread responsible for handling a client side bluetooth connection.
      */
-    private static boolean isSupported() {
-        if (mBluetoothAdapter == null) {
-            mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-            if (mBluetoothAdapter == null) return false;
+    private class ConnectThread extends Thread {
+        private BluetoothSocket mmSocket;
+        private BluetoothHandler handler;
+
+        public ConnectThread(BluetoothDevice device, BluetoothHandler handler) {
+            connectThread = this;
+            this.handler = handler;
+            try {
+                mmSocket = device.createRfcommSocketToServiceRecord(UUID);
+            } catch (IOException e) {
+                handler.onError(e);
+            }
         }
-        return true;
+
+        public void run() {
+            mBluetoothAdapter.cancelDiscovery();
+
+            try {
+                mmSocket.connect();
+                handler.onConnect(mmSocket);
+            } catch (IOException connectException) {
+                handler.onError(connectException);
+            } finally {
+                try { mmSocket.close(); }
+                catch (IOException closeException) {}
+            }
+        }
+
+        public void cancel() {
+            try {
+                mmSocket.close();
+            } catch (IOException e) { }
+        }
     }
 
     /**
-     * Attempts to enable Bluetooth on behalf of the provided activity if necessary.
+     * The thread responsible for handling a server side bluetooth connection. This
+     * thread listens for incomming connections and invokes the onConnect() method
+     * on the handler instance.
      */
-    private static void enable(Activity activity) {
-        if (!mBluetoothAdapter.isEnabled()) {
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            activity.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+    private class AcceptThread extends Thread {
+        private BluetoothServerSocket mmServerSocket;
+        private BluetoothHandler handler;
+
+        public AcceptThread(BluetoothHandler handler) {
+            acceptThread = this;
+            this.handler = handler;
+            try {
+                mmServerSocket = mBluetoothAdapter.listenUsingRfcommWithServiceRecord(SERVICE_NAME, UUID);
+            } catch (IOException e) {
+                handler.onError(e);
+            }
         }
-    }
 
-    /**
-     * Starts scanning for new Bluetooth devices.
-     * @param activity
-     * @param adapter
-     */
-    private void startReceiver(Activity activity, ArrayAdapter adapter) {
-        final ArrayAdapter mAdapter = adapter;
+        public void run() {
+            BluetoothSocket socket = null;
 
-        // Create a BroadcastReceiver for ACTION_FOUND
-        mReceiver = new BroadcastReceiver() {
-            public void onReceive(Context context, Intent intent) {
-                String action = intent.getAction();
-                // When discovery finds a device
-                if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                    // Get the BluetoothDevice object from the Intent
-                    BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                    // Add the name and address to an array adapter to show in a ListView
-                    mAdapter.add(device.getName() + "\n" + device.getAddress());
+            while (true) {
+                try {
+                    socket = mmServerSocket.accept();
+                } catch (IOException e) {
+                    break;
+                }
+                if (socket != null) {
+                    handler.onConnect(socket);
+                    try { mmServerSocket.close(); }
+                    catch (IOException e) {}
+                    break;
                 }
             }
-        };
+        }
 
-        // Register the BroadcastReceiver
-        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        activity.registerReceiver(mReceiver, filter); // Don't forget to unregister during onDestroy
+        public void cancel() {
+            try {
+                mmServerSocket.close();
+            } catch (IOException e) {}
+        }
     }
 }
+

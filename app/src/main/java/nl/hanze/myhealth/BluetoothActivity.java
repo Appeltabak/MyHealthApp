@@ -1,8 +1,6 @@
 package nl.hanze.myhealth;
 
-import android.app.Activity;
 import android.bluetooth.BluetoothSocket;
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -14,7 +12,7 @@ import android.widget.Toast;
 import java.io.IOException;
 
 
-public class BluetoothActivity extends AppCompatActivity implements BluetoothClientHandler {
+public class BluetoothActivity extends AppCompatActivity implements BluetoothHandler {
     private Bluetooth bluetooth;
 
     @Override
@@ -22,53 +20,34 @@ public class BluetoothActivity extends AppCompatActivity implements BluetoothCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth);
 
-        final Activity mActivity = this;
-        final BluetoothClientHandler mHandler = this;
-
-        final Bluetooth bluetooth = new Bluetooth();
-        this.bluetooth = bluetooth;
-
+        this.bluetooth = new Bluetooth();
         bluetooth.init(this);
-        bluetooth.setName("MyHealth Monitor");
 
+        final BluetoothHandler mHandler = this;
         Button button = (Button) findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                bluetooth.enableDiscoverability(mActivity, 120);
-                BluetoothServerThread server = new BluetoothServerThread(mHandler, bluetooth);
-                server.start();
+                bluetooth.listen(mHandler);
             }
         });
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_bluetooth, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(resultCode == RESULT_CANCELED) {
-            Toast.makeText(this, "An error occurred: The device is not discoverable!", Toast.LENGTH_LONG).show();
-        }
     }
 
     @Override
@@ -80,15 +59,9 @@ public class BluetoothActivity extends AppCompatActivity implements BluetoothCli
     public void onConnect(BluetoothSocket client) {
         Toast.makeText(this, "Client connected!", Toast.LENGTH_LONG).show();
         try {
-            bluetooth.send("Hello World!", client);
+            bluetooth.sendLine("Hello World!", client);
         } catch (IOException e) {
             Toast.makeText(this, "Unable to send message", Toast.LENGTH_LONG).show();
-        } finally {
-            try {
-                client.close();
-            } catch (IOException e) {
-                Toast.makeText(this, "Exception: " + e.getMessage(), Toast.LENGTH_LONG).show();
-            }
         }
     }
 }
