@@ -59,10 +59,12 @@ public class BluetoothActivity extends AppCompatActivity implements BluetoothHan
     public void onConnect(BluetoothSocket client) {
         Toast.makeText(this, "Client connected!", Toast.LENGTH_LONG).show();
         try {
-            RunSimulator sim = new RunSimulator();
-            bluetooth.sendHealthData(sim.runSim(), client);
+            HealthData healthdata = bluetooth.readHealthData(client);
+            Toast.makeText(this, "Healthdata pulse: " + healthdata.getPulse(), Toast.LENGTH_LONG).show();
         } catch (IOException e) {
-            Toast.makeText(this, "Unable to send message", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Unable to send object", Toast.LENGTH_LONG).show();
+        } catch (ClassNotFoundException x){
+            Toast.makeText(this, "Unable to receive object", Toast.LENGTH_LONG).show();
         }
     }
 }

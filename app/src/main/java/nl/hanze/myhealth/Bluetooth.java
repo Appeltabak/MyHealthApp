@@ -164,7 +164,7 @@ public class Bluetooth {
 
     /**
      * The thread responsible for handling a server side bluetooth connection. This
-     * thread listens for incomming connections and invokes the onConnect() method
+     * thread listens for incoming connections and invokes the onConnect() method
      * on the handler instance.
      */
     private class AcceptThread extends Thread {
