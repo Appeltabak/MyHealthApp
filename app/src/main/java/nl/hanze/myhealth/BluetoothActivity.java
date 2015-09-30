@@ -1,15 +1,20 @@
 package nl.hanze.myhealth;
 
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import java.io.IOException;
+import java.util.Set;
 
 
 public class BluetoothActivity extends AppCompatActivity implements BluetoothHandler {
@@ -19,18 +24,26 @@ public class BluetoothActivity extends AppCompatActivity implements BluetoothHan
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth);
-
-        this.bluetooth = new Bluetooth();
+        bluetooth = new Bluetooth();
         bluetooth.init(this);
-
+        ListView view = (ListView) findViewById(R.id.listView);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item);
+        view.setAdapter(adapter);
+        Set<BluetoothDevice> devices = bluetooth.getBondedDevices();
+        for(BluetoothDevice device : devices) {
+            adapter.add(device.getName() + "\n" + device.getAddress());
+        }
         final BluetoothHandler mHandler = this;
-        Button button = (Button) findViewById(R.id.button);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                bluetooth.listen(mHandler);
-            }
-        });
+        view.setOnItemClickListener(
+                new AdapterView.OnItemClickListener() {
+                    public void onItemClick(AdapterView<?> av, View v, int arg2, long arg3) {
+                        // Get the device MAC address, which is the last 17 chars in the View
+                        String info = ((TextView) v).getText().toString();
+                        String address = info.substring(info.length() - 17);
+                        bluetooth.connect(address, mHandler);
+                    }
+                }
+        );
     }
 
     @Override
@@ -52,19 +65,18 @@ public class BluetoothActivity extends AppCompatActivity implements BluetoothHan
 
     @Override
     public void onError(Exception e) {
-        Toast.makeText(this, "An error occurred: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        Log.d("mah debug","An error occurred: " + e.getMessage());
     }
 
     @Override
     public void onConnect(BluetoothSocket client) {
-        Toast.makeText(this, "Client connected!", Toast.LENGTH_LONG).show();
+        Log.d("mah debug","Client connected!");
         try {
-            HealthData healthdata = bluetooth.readHealthData(client);
-            Toast.makeText(this, "Healthdata pulse: " + healthdata.getPulse(), Toast.LENGTH_LONG).show();
+            RunSimulator sim = new RunSimulator();
+            HealthData healthData = sim.runSim();
+            bluetooth.sendHealthData(healthData, client);
         } catch (IOException e) {
-            Toast.makeText(this, "Unable to send object", Toast.LENGTH_LONG).show();
-        } catch (ClassNotFoundException x){
-            Toast.makeText(this, "Unable to receive object", Toast.LENGTH_LONG).show();
+            Log.d("mah debug", "Unable to send object");
         }
     }
 }

@@ -147,8 +147,8 @@ public class Bluetooth {
             try {
                 mmSocket.connect();
                 handler.onConnect(mmSocket);
-            } catch (IOException connectException) {
-                handler.onError(connectException);
+            } catch (Exception exception) {
+                handler.onError(exception);
             } finally {
                 try { mmSocket.close(); }
                 catch (IOException closeException) {}

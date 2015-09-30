@@ -1,9 +1,11 @@
 package nl.hanze.myhealth;
 
+import java.io.Serializable;
+
 /**
  * Created by timar on 29-09-15.
  */
-public class HealthData {
+public class HealthData implements Serializable {
     public int[] bloodpressure;
     public int[] ecg;
     public int pulse;
