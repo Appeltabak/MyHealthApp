@@ -171,7 +171,7 @@ public class PhotoIntentActivity extends Activity implements MyHealthHandler {
 
     @Override
     public void onResult(Object result) {
-        Toast.makeText(this, "Success! picture send.", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, result.toString(), Toast.LENGTH_LONG).show();
         findViewById(R.id.loadingPanel).setVisibility(View.GONE);
     }
 

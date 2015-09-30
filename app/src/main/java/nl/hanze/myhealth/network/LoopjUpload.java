@@ -29,14 +29,14 @@ public class LoopjUpload {
         AsyncHttpClient myClient = new AsyncHttpClient();
 
         RequestParams params = new RequestParams();
-        try{
             params.put("user_id",'1');
+        try {
             params.put("file", uploadImage);
-        }catch(FileNotFoundException e){
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
 
-        myClient.post("http://myhealthweb.herokuapp.com/api/upload_image", new TextHttpResponseHandler() {
+        myClient.post("https://myhealthweb.herokuapp.com/api/upload_image", params, new TextHttpResponseHandler() {
 
             @Override
             public void onStart() {
@@ -53,7 +53,7 @@ public class LoopjUpload {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                mHandler.onResult("Good happened");
+                mHandler.onResult(responseString);
             }
 
             @Override
@@ -61,5 +61,8 @@ public class LoopjUpload {
                 // called when request is retried
             }
         });
+
+
+
     }
 }
