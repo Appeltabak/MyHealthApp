@@ -18,6 +18,7 @@ import java.io.IOException;
 import android.view.View;
 import android.widget.Toast;
 
+import nl.hanze.myhealth.network.LoopjUpload;
 import nl.hanze.myhealth.network.MyHealthAPI;
 import nl.hanze.myhealth.network.MyHealthHandler;
 
@@ -33,11 +34,14 @@ public class PhotoIntentActivity extends Activity implements MyHealthHandler {
     private ImageView mImageView;
 
     public MyHealthAPI api;
+    public LoopjUpload up;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        up = new LoopjUpload(this);
         setContentView(R.layout.activity_photo_intent);
 
         mImageView = (ImageView) findViewById(R.id.imageView1);
@@ -97,14 +101,10 @@ public class PhotoIntentActivity extends Activity implements MyHealthHandler {
             switch(requestCode)
             {
                 case PICK_IMAGE:
-                    try {
                         String filepath = pickImageFromGallery(intent);
-                        api.upload_picture(new File(filepath));
+                        up.uploadFile(new File(filepath));
+                        //api.upload_picture(new File(filepath));
                         mImageView.setImageBitmap(BitmapFactory.decodeFile(filepath));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
                     break;
                 case ACTION_TAKE_PHOTO:
                         showImg();
@@ -155,7 +155,7 @@ public class PhotoIntentActivity extends Activity implements MyHealthHandler {
 
     @Override
     public void onResult(Object result) {
-        Toast.makeText(this, "Success!", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Success! picture send.", Toast.LENGTH_LONG).show();
     }
 
     @Override
