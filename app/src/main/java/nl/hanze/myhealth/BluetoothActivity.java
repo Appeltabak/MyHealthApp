@@ -70,8 +70,8 @@ public class BluetoothActivity extends AppCompatActivity implements BluetoothHan
     @Override
     public void onConnect(BluetoothSocket client) {
         try {
-            String message = bluetooth.readLine(client);
-            Toast.makeText(this, "Client says: " + message, Toast.LENGTH_LONG).show();
+            HealthData healthdata = bluetooth.readHealthData(client);
+            Toast.makeText(this, "Client says: " + healthdata.pulse, Toast.LENGTH_LONG).show();
         } catch (Exception e) {
             Toast.makeText(this, "Unable to read line!", Toast.LENGTH_LONG).show();
         } finally {

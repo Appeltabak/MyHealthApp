@@ -13,6 +13,8 @@ import android.content.IntentFilter;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.util.Set;
 import java.util.UUID;
@@ -163,6 +165,28 @@ public class Bluetooth {
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         }
         return reader.readLine();
+    }
+
+    /**
+     * Sends an Object
+     * @param healthdata
+     * @param socket
+     * @throws IOException
+     */
+    public void sendHealthData(HealthData healthdata, BluetoothSocket socket) throws IOException{
+        ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+        out.writeObject(healthdata);
+    }
+
+    /**
+     * @param socket
+     * @return
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    public HealthData readHealthData(BluetoothSocket socket) throws IOException, ClassNotFoundException {
+        ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+        return (HealthData)in.readObject();
     }
 
     /**
