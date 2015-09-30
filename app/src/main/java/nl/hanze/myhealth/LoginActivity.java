@@ -70,9 +70,7 @@ public class LoginActivity extends Activity implements MyHealthHandler {
     public void onResult(Object result) {
         //Go to mainmenu. (new intent).
         Toast.makeText(this, "Success!", Toast.LENGTH_LONG).show();
-
         Intent i = new Intent(LoginActivity.this, MainMenu.class);
-        //Intent i = new Intent(Splashscreen.this, MainMenu.class);
         startActivity(i);
     }
 

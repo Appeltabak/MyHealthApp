@@ -13,10 +13,16 @@ import android.view.Menu;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import java.io.File;
 import java.io.IOException;
 import android.view.View;
+import android.widget.Toast;
 
-public class PhotoIntentActivity extends Activity {
+import nl.hanze.myhealth.network.LoopjUpload;
+import nl.hanze.myhealth.network.MyHealthAPI;
+import nl.hanze.myhealth.network.MyHealthHandler;
+
+public class PhotoIntentActivity extends Activity implements MyHealthHandler {
 
     private static final int ACTION_TAKE_PHOTO = 1;
     private static final int PICK_IMAGE = 2;
@@ -27,10 +33,16 @@ public class PhotoIntentActivity extends Activity {
 
     private ImageView mImageView;
 
+    public MyHealthAPI api;
+    public LoopjUpload up;
+    public String filepath;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        up = new LoopjUpload(this);
         setContentView(R.layout.activity_photo_intent);
 
         findViewById(R.id.loadingPanel).setVisibility(View.GONE);
@@ -63,6 +75,7 @@ public class PhotoIntentActivity extends Activity {
             }
         });
 
+        api = new MyHealthAPI(getApplicationContext(), this);
         sendButton.setOnClickListener(new Button.OnClickListener() {
 
             @Override
@@ -70,15 +83,13 @@ public class PhotoIntentActivity extends Activity {
 
                 findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
                 sendButton.setVisibility(View.INVISIBLE);
-                try {
-                    api.upload_picture(image);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                up.uploadFile(new File(filepath));
 
             }//end onclick
 
         });//end onclicklistener.
+
+
     }
 
     public void disableShowButton(){
@@ -108,7 +119,8 @@ public class PhotoIntentActivity extends Activity {
             switch(requestCode)
             {
                 case PICK_IMAGE:
-                        mImageView.setImageBitmap(BitmapFactory.decodeFile(pickImageFromGallery(intent)));
+                        filepath = pickImageFromGallery(intent);
+                        mImageView.setImageBitmap(BitmapFactory.decodeFile(filepath));
                     break;
                 case ACTION_TAKE_PHOTO:
                         showImg();
@@ -159,13 +171,13 @@ public class PhotoIntentActivity extends Activity {
 
     @Override
     public void onResult(Object result) {
-        Toast.makeText(this,"OK",Toast.LENGTH_LONG ).show();
+        Toast.makeText(this, "Success! picture send.", Toast.LENGTH_LONG).show();
         findViewById(R.id.loadingPanel).setVisibility(View.GONE);
     }
 
     @Override
     public void onError(Object error) {
-        Toast.makeText(this,"WRONG!"+ error,Toast.LENGTH_LONG ).show();
+        Toast.makeText(this, "Failure: " + error.toString(), Toast.LENGTH_LONG).show();
         findViewById(R.id.loadingPanel).setVisibility(View.GONE);
         disableShowButton();
     }

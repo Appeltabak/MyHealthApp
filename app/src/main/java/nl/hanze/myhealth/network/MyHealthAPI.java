@@ -77,7 +77,7 @@ public class MyHealthAPI {
     public void upload_picture(File image) throws IOException {
         final MyHealthHandler mHandler = handler;
         final String bytes = Image_Util.imageToBytes(image);
-        final String url = HOST + "api/image_uploade/"; //TODO Correct url.
+        final String url = HOST + "api/upload_image"; //TODO Correct url.
 
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.POST, url, new Response.Listener<JSONObject>() {
@@ -97,8 +97,8 @@ public class MyHealthAPI {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
                 // the POST parameters:
-                params.put("image", bytes);
-                params.put("network", "tutsplus");
+                params.put("files", bytes);
+                params.put("user_id", "1");
                 return params;
             }
         };
