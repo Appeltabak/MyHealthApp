@@ -27,7 +27,6 @@ public class Splashscreen extends Activity {
             public void run() {
                 // TODO Auto-generated method stub
                Intent i = new Intent(Splashscreen.this, LoginActivity.class);
-               //Intent i = new Intent(Splashscreen.this, MainMenu.class);
                 startActivity(i);
                 this.finish();
             }
