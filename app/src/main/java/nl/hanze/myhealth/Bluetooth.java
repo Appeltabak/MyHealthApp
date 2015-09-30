@@ -102,11 +102,23 @@ public class Bluetooth {
         return reader.readLine();
     }
 
+    /**
+     * Sends an Object
+     * @param healthdata
+     * @param socket
+     * @throws IOException
+     */
     public void sendHealthData(HealthData healthdata, BluetoothSocket socket) throws IOException{
         ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
         out.writeObject(healthdata);
     }
 
+    /**
+     * @param socket
+     * @return
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     public HealthData readHealthData(BluetoothSocket socket) throws IOException, ClassNotFoundException {
         ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
         return (HealthData)in.readObject();
